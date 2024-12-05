@@ -25,7 +25,7 @@ st.title('OpenAI API Applications')
 
 # Sidebar for navigation
 st.sidebar.title("Applications")
-applications = ["Blog Generation", "Movie Recommendation", "Book Recommendation", "Generate Image", "Mental Health FAQ", "Voice to text"]
+applications = ["Blog Generation", "Book Recommendation", "Generate Image", "Mental Health FAQ", "Voice to text"]
 application_choice = st.sidebar.radio("Choose an Application", applications)
 
 def blog_generation(topic, additional_pointers):
@@ -75,28 +75,6 @@ def recommendation(client_input_text,index):
         )
 
     return result
-
-def getDataset(dataset_filename):
-       # Load dataset from the Excel file
-
-    df = pd.read_csv(dataset_filename)  # Read Excel file
-
-    subset = df[['Questions', 'Answers']]
-    
-    # đọc 20 cột đầu
-    small_dataset = subset.iloc[:20]
-
-    # Validate dataset format
-    if not {'Questions', 'Answers'}.issubset(small_dataset.columns):
-        print("Error: The dataset must have 'Question' and 'Answer' columns.")
-        return
-
-    # Format dataset into a string
-    dataset_str = "Document content:\n"
-    for _, row in small_dataset.iterrows():
-        dataset_str += f"Question: {row['Questions']} Answer: {row['Answers']}\n"
-    
-    return dataset_str 
 
 def faq(dataset_str):   
     # OpenAI setup
@@ -238,24 +216,6 @@ def main():
             for output in outputs.data:
                 st.image(output.url)
 
-    elif application_choice == "Movie Recommendation":
-        st.header("Movie Recommendation with GPT")
-        st.write("Input a movie description and get a recommendation.")
-
-        input_text = st.text_area("Enter movie description:")
-
-        if st.button("Get movies") and input_text != "":
-            with st.spinner('Generating...'):
-                result = recommendation(input_text,index_movies)
-
-                # Access the 'matches' key from the response
-                if 'matches' in result:
-                    st.write("Here are top 10 movies based on your input:")
-                    for match in result['matches']:
-                        st.write(match['metadata']['title'])
-                else:
-                    st.write("No matches found!")
-    
     elif application_choice == "Book Recommendation":
         st.header("Book Recommendation with GPT")
         st.write("Input a book description and get a recommendation.")
@@ -274,8 +234,8 @@ def main():
                 else:
                     st.write("No matches found!")
         
-    elif application_choice == "Mental Health FAQ":
-        st.header("Mental Health FAQ")
+    elif application_choice == "FAQ":
+        st.header("FAQ")
         st.write("Input a question and get an answer.")
         healthfaq = uploadExcel()
         if healthfaq is not None:
